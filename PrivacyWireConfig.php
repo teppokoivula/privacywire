@@ -28,13 +28,23 @@ class PrivacyWireConfig extends ModuleConfig
             'textformatter_choose_label' => $this->_("Show or edit my Cookie Consent"),
             'use_procache_minification' => true,
             'trigger_custom_js_function' => "",
-            'add_basic_css_styling' => true
+            'add_basic_css_styling' => true,
+            'cookies' => ''
         ];
     }
 
     public function getInputfields()
     {
         $inputfields = parent::getInputfields();
+
+        $cookieField = new InputfieldWrapper();
+
+        // cookies (array / json)
+        $f = $this->modules->get('InputfieldHidden');
+        $f->attr('name', 'cookies');
+        $f->description = $this->_("JSON String of the cookie groups and their definition");
+        $f->label = $this->_('Version Number');
+        $inputfields->add($f);
 
         // version integer
         $f = $this->modules->get('InputfieldInteger');

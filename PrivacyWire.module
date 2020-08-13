@@ -25,7 +25,7 @@ class PrivacyWire extends WireData implements Module, ConfigurableModule
             'summary' => "This module adds management options for GDPR-relevant elements (loading maps, videos etc. only after accepting external media) and cookies.",
             'author' => "blaueQuelle",
             'href' => "https://github.com/blaueQuelle/privacywire",
-            'version' => 22,
+            'version' => 23,
             'autoload' => true,
             'singular' => true,
             'requires' => [ "PHP>=7.2", "ProcessWire>=3.0.110" ],
@@ -40,6 +40,10 @@ class PrivacyWire extends WireData implements Module, ConfigurableModule
             $this->wire('page')->template == 'admin' || // exclude admin pages
             $this->wire('page')->template == 'form-builder' // exclude from form-builder iframe
         ) {
+            if ($this->className() == $this->wire('input')->get->name) {
+                // add js file for module config only when we are editing the PrivacyWire Module Config
+                $this->addHookAfter('ProcessModule::executeEdit', $this, "add_backend_scripts");
+            }
             return;
         }
 
@@ -64,6 +68,11 @@ class PrivacyWire extends WireData implements Module, ConfigurableModule
         }
 
         $event->return = str_replace("</body>", "{$output}</body>", $event->return);
+    }
+
+    protected function add_backend_scripts()
+    {
+        $this->wire('config')->scripts->add($this->wire('config')->urls('PrivacyWire') . 'js/PrivacyWireAdmin.js');
     }
 
     public function ___install() { }
